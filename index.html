@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Compressor - The Ultimate Game Repacking Toolkit</title>
+    <meta name="description" content="Mini Compressor is a Swiss Army knife for game repacking. 30+ compression engines, Masked Compression v3.0, SFX creation, and completely free.">
+    <meta name="keywords" content="game repacking, compression tool, Mini Compressor, CarldricGaming, game compression, repack tool">
+    <meta name="author" content="CarldricGaming">
+
+
+    <meta property="og:title" content="Mini Compressor - The Ultimate Game Repacking Toolkit">
+    <meta property="og:description" content="30+ compression engines. Masked Compression v3.0. Completely free and open source.">
+    <meta property="og:image" content="https://user-images.githubusercontent.com/46277745/214106133-1d304a0c-b909-42c3-a20b-93bdcaedb9ae.png">
+    <meta property="og:url" content="https://github.com/CarldricGaming/Mini-Compressor">
+    <meta property="og:type" content="website">
+
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Mini Compressor - Game Repacking Toolkit">
+    <meta name="twitter:description" content="The ultimate compression tool for game repackers. Free and open source.">
+    <meta name="twitter:image" content="https://user-images.githubusercontent.com/46277745/214106133-1d304a0c-b909-42c3-a20b-93bdcaedb9ae.png">
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'space': ['Space Grotesk', 'sans-serif'],
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#00d4ff',
+                        secondary: '#0099cc',
+                        accent: '#00ff88',
+                        dark: '#0a0a0f',
+                        darker: '#050508',
+                        card: 'rgba(255, 255, 255, 0.03)',
+                        'card-border': 'rgba(255, 255, 255, 0.1)',
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 5px #00d4ff, 0 0 10px #00d4ff' },
+                            '100%': { boxShadow: '0 0 20px #00d4ff, 0 0 30px #00d4ff' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0a0f;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Space Grotesk', sans-serif;
+            margin: 0;
+        }
+
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0a0f;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #00d4ff, #0099cc);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #00ff88, #00d4ff);
+        }
+
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .glass-hover:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(0, 212, 255, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(0, 212, 255, 0.1);
+            transform: translateY(-5px);
+        }
+
+
+        .gradient-text {
+            background: linear-gradient(135deg, #00d4ff 0%, #00ff88 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+
+        .btn-glow {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .btn-glow::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-glow:hover::before {
+            left: 100%;
+        }
+
+        .btn-glow:hover {
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+
+        #loader {
+            position: fixed;
+            inset: 0;
+            background: #0a0a0f;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        #loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader-ring {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(0, 212, 255, 0.1);
+            border-top-color: #00d4ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+
+        #tsparticles {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+
+        .nav-link {
+            position: relative;
+            padding: 0.5rem 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            transition: color 0.3s ease;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 0;
+            height: 2px;
+            background: #00d4ff;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 80%;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: #00d4ff;
+        }
+
+
+        .feature-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .feature-icon {
+            transition: transform 0.4s ease;
+        }
+
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #00d4ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+
+        .screenshot-frame {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 212, 255, 0.25);
+        }
+
+        .screenshot-frame::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 2px solid rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+
+        .download-card {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .download-card:hover {
+            border-color: rgba(0, 212, 255, 0.6);
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 212, 255, 0.15);
+        }
+
+
+        .credits-track {
+            display: flex;
+            animation: scroll 40s linear infinite;
+        }
+
+        .credits-track:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .credit-item {
+            transition: all 0.3s ease;
+        }
+
+        .credit-item:hover {
+            transform: scale(1.05);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+
+        .tooltip {
+            position: relative;
+        }
+
+        .tooltip::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            padding: 0.5rem 1rem;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .tooltip:hover::before {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(-5px);
+        }
+
+
+        .step-card {
+            position: relative;
+        }
+
+        .step-number {
+            position: absolute;
+            top: -20px;
+            left: -20px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+        }
+
+
+        #backToTop {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+        }
+
+        #backToTop.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        #backToTop:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 212, 255, 0.4);
+        }
+
+
+        .pulse-badge {
+            animation: pulse-badge 2s infinite;
+        }
+
+        @keyframes pulse-badge {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0, 212, 255, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(0, 212, 255, 0); }
+        }
+
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+
+        body.light-mode {
+            background: #f0f4f8;
+            color: #1a202c;
+        }
+
+        body.light-mode .glass {
+            background: rgba(255, 255, 255, 0.7);
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+
+        body.light-mode .nav-link {
+            color: rgba(0, 0, 0, 0.7);
+        }
+
+        body.light-mode .nav-link:hover,
+        body.light-mode .nav-link.active {
+            color: #0099cc;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="loader">
+        <div class="loader-ring mb-4"></div>
+        <div class="text-primary font-space text-xl font-bold tracking-wider">MINI COMPRESSOR</div>
+        <div class="text-gray-500 text-sm mt-2">Loading Experience...</div>
+    </div>
+
+
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 opacity-0 -translate-y-full">
+        <div class="glass">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center space-x-3">
+                        <img src="data:image/png;base64,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" alt="Mini Compressor Logo" class="w-10 h-10 rounded-lg object-contain bg-black/20">
+                        <span class="font-space font-bold text-xl tracking-tight">Mini Compressor</span>
+                    </div>
+
+                    <div class="hidden md:flex items-center space-x-1">
+                        <a href="#hero" class="nav-link active text-sm font-medium">Home</a>
+                        <a href="#features" class="nav-link text-sm font-medium">Features</a>
+                        <a href="#stats" class="nav-link text-sm font-medium">Stats</a>
+                        <a href="#how-it-works" class="nav-link text-sm font-medium">How It Works</a>
+                        <a href="#screenshots" class="nav-link text-sm font-medium">Screenshots</a>
+                        <a href="#downloads" class="nav-link text-sm font-medium">Download</a>
+                        <a href="#credits" class="nav-link text-sm font-medium">Credits</a>
+                    </div>
+
+                    <div class="flex items-center space-x-4">
+                        <button id="themeToggle" class="p-2 rounded-lg hover:bg-white/10 transition-colors">
+                            <i data-lucide="sun" class="w-5 h-5"></i>
+                        </button>
+                        <a href="https://github.com/CarldricGaming/Mini-Compressor" target="_blank" class="btn-glow bg-primary hover:bg-secondary text-black font-semibold px-4 py-2 rounded-lg text-sm flex items-center space-x-2">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.37 0 0 5.373 0 12c0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.84 1.236 1.84 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.418-1.305.762-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.605-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.298 24 12c0-6.627-5.373-12-12-12z"/></svg>
+                            <span>GitHub</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+    <section id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div id="tsparticles"></div>
+
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-dark/50 to-dark pointer-events-none z-10"></div>
+
+        <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="hero-content">
+                <div class="inline-flex items-center space-x-2 glass px-4 py-2 rounded-full mb-6 pulse-badge">
+                    <span class="w-2 h-2 bg-accent rounded-full animate-pulse"></span>
+                    <span class="text-sm font-medium text-primary">Latest Version</span>
+                    <span class="text-sm font-bold text-white">v2025.12.14</span>
+                </div>
+
+                <h1 class="font-space text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight">
+                    <span class="block text-white">The Ultimate</span>
+                    <span class="gradient-text">Game Repacking</span>
+                    <span class="block text-white">Toolkit</span>
+                </h1>
+
+                <p class="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto mb-10 font-light">
+                    Swiss Army knife for game repacking. 30+ compression engines, Masked Compression v3.0,
+                    SFX creation, and completely free & open source.
+                </p>
+
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="https://github.com/CarldricGaming/Mini-Compressor/releases/download/v2025.12.14/Mini.Compressor.v2025.12.14.7z" class="btn-glow bg-gradient-to-r from-primary to-secondary text-black font-bold px-8 py-4 rounded-xl text-lg flex items-center space-x-3 group">
+                        <i data-lucide="download" class="w-6 h-6 group-hover:animate-bounce"></i>
+                        <span>Download Latest</span>
+                    </a>
+                    <a href="https://github.com/CarldricGaming/Mini-Compressor" target="_blank" class="btn-glow glass glass-hover text-white font-semibold px-8 py-4 rounded-xl text-lg flex items-center space-x-3">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.37 0 0 5.373 0 12c0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.84 1.236 1.84 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.418-1.305.762-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.605-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.298 24 12c0-6.627-5.373-12-12-12z"/></svg>
+                        <span>View on GitHub</span>
+                    </a>
+                </div>
+
+                <div class="mt-16 flex items-center justify-center space-x-8 text-gray-500">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="check-circle" class="w-5 h-5 text-accent"></i>
+                        <span class="text-sm">100% Free</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="shield" class="w-5 h-5 text-accent"></i>
+                        <span class="text-sm">Open Source</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="zap" class="w-5 h-5 text-accent"></i>
+                        <span class="text-sm">Lightning Fast</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20 animate-bounce">
+            <i data-lucide="chevron-down" class="w-8 h-8 text-primary opacity-50"></i>
+        </div>
+    </section>
+
+
+    <section id="features" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-space text-4xl md:text-5xl font-bold mb-4">
+                    Powerful <span class="gradient-text">Features</span>
+                </h2>
+                <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+                    Everything you need for professional game repacking in one intuitive toolkit.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                <div class="feature-card glass rounded-2xl p-8 reveal">
+                    <div class="feature-icon w-14 h-14 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl flex items-center justify-center mb-6 border border-primary/30">
+                        <i data-lucide="layers" class="w-7 h-7 text-primary"></i>
+                    </div>
+                    <h3 class="font-space text-xl font-bold mb-3">Masked Compression v3.0</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Advanced compression masking technology that optimizes game files for maximum compression ratio while maintaining integrity.
+                    </p>
+                </div>
+
+
+                <div class="feature-card glass rounded-2xl p-8 reveal">
+                    <div class="feature-icon w-14 h-14 bg-gradient-to-br from-accent/20 to-primary/20 rounded-xl flex items-center justify-center mb-6 border border-accent/30">
+                        <i data-lucide="package" class="w-7 h-7 text-accent"></i>
+                    </div>
+                    <h3 class="font-space text-xl font-bold mb-3">SFX Creation</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Create self-extracting archives with custom icons, music, and wallpapers for a professional repack presentation.
+                    </p>
+                </div>
+
+
+                <div class="feature-card glass rounded-2xl p-8 reveal">
+                    <div class="feature-icon w-14 h-14 bg-gradient-to-br from-purple-500/20 to-primary/20 rounded-xl flex items-center justify-center mb-6 border border-purple-500/30">
+                        <i data-lucide="refresh-cw" class="w-7 h-7 text-purple-400"></i>
+                    </div>
+                    <h3 class="font-space text-xl font-bold mb-3">Auto-Updater</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Built-in update checker ensures you always have the latest compression engines and features (Help > Check for Updates).
+                    </p>
+                </div>
+
+
+                <div class="feature-card glass rounded-2xl p-8 reveal">
+                    <div class="feature-icon w-14 h-14 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-xl flex items-center justify-center mb-6 border border-orange-500/30">
+                        <i data-lucide="cpu" class="w-7 h-7 text-orange-400"></i>
+                    </div>
+                    <h3 class="font-space text-xl font-bold mb-3">Multi-Threaded</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Full CPU utilization with parallel processing support. Compress faster using all available cores and threads.
+                    </p>
+                </div>
+
+
+                <div class="feature-card glass rounded-2xl p-8 reveal">
+                    <div class="feature-icon w-14 h-14 bg-gradient-to-br from-pink-500/20 to-purple-500/20 rounded-xl flex items-center justify-center mb-6 border border-pink-500/30">
+                        <i data-lucide="gamepad-2" class="w-7 h-7 text-pink-400"></i>
+                    </div>
+                    <h3 class="font-space text-xl font-bold mb-3">Game-Specific Methods</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Pre-configured compression chains for popular game engines. Optimized settings for Unity, Unreal, Frostbite, and more.
+                    </p>
+                </div>
+
+
+                <div class="feature-card glass rounded-2xl p-8 reveal">
+                    <div class="feature-icon w-14 h-14 bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-xl flex items-center justify-center mb-6 border border-yellow-500/30 relative">
+                        <i data-lucide="music" class="w-7 h-7 text-yellow-400"></i>
+                        <span class="absolute -top-2 -right-2 bg-accent text-black text-xs font-bold px-2 py-1 rounded-full">NEW</span>
+                    </div>
+                    <h3 class="font-space text-xl font-bold mb-3">Custom Music & Wallpaper</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Personalize your compression experience with custom BASS audio settings and change wallpapers from the Options menu.
+                    </p>
+                </div>
+
+
+                <div class="feature-card glass rounded-2xl p-8 reveal lg:col-span-3">
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        <div class="feature-icon w-16 h-16 bg-gradient-to-br from-cyan-400/20 to-blue-500/20 rounded-xl flex items-center justify-center border border-cyan-400/30 flex-shrink-0">
+                            <i data-lucide="zap" class="w-8 h-8 text-cyan-400"></i>
+                        </div>
+                        <div class="flex-1 text-center md:text-left">
+                            <div class="flex items-center justify-center md:justify-start gap-3 mb-2">
+                                <h3 class="font-space text-2xl font-bold">Oodle7 Kraken Support</h3>
+                                <span class="bg-gradient-to-r from-cyan-400 to-blue-500 text-black text-xs font-bold px-3 py-1 rounded-full">LATEST</span>
+                            </div>
+                            <p class="text-gray-400">
+                                Full support for Oodle Kraken, Mermaid, Selkie, and Leviathan compression algorithms.
+                                Industry-leading compression ratios for modern game development pipelines.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="stats" class="py-20 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-primary/5 to-accent/5"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div class="text-center reveal">
+                    <div class="stat-number" data-target="30">0</div>
+                    <div class="text-gray-400 font-medium mt-2">Compression Engines</div>
+                </div>
+                <div class="text-center reveal">
+                    <div class="stat-number" data-target="100">0</div>
+                    <div class="text-gray-400 font-medium mt-2">% Free Forever</div>
+                </div>
+                <div class="text-center reveal">
+                    <div class="stat-number" data-target="7">0</div>
+                    <div class="text-gray-400 font-medium mt-2">Windows Versions</div>
+                </div>
+                <div class="text-center reveal">
+                    <div class="stat-number" data-target="3">0</div>
+                    <div class="text-gray-400 font-medium mt-2">.0 Masked Compression</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="how-it-works" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-space text-4xl md:text-5xl font-bold mb-4">
+                    How It <span class="gradient-text">Works</span>
+                </h2>
+                <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+                    Get started with Mini Compressor in four simple steps.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="step-card glass rounded-2xl p-8 pt-12 reveal">
+                    <div class="step-number">1</div>
+                    <div class="w-12 h-12 bg-primary/20 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="download" class="w-6 h-6 text-primary"></i>
+                    </div>
+                    <h3 class="font-space text-lg font-bold mb-2">Download</h3>
+                    <p class="text-gray-400 text-sm">Download the latest release from GitHub and extract to your preferred location.</p>
+                </div>
+
+                <div class="step-card glass rounded-2xl p-8 pt-12 reveal">
+                    <div class="step-number">2</div>
+                    <div class="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="folder-open" class="w-6 h-6 text-accent"></i>
+                    </div>
+                    <h3 class="font-space text-lg font-bold mb-2">Select Files</h3>
+                    <p class="text-gray-400 text-sm">Choose your game files or folder to compress. Supports all major game formats.</p>
+                </div>
+
+                <div class="step-card glass rounded-2xl p-8 pt-12 reveal">
+                    <div class="step-number">3</div>
+                    <div class="w-12 h-12 bg-purple-500/20 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="settings" class="w-6 h-6 text-purple-400"></i>
+                    </div>
+                    <h3 class="font-space text-lg font-bold mb-2">Configure</h3>
+                    <p class="text-gray-400 text-sm">Select compression method, enable SFX if needed, and adjust settings.</p>
+                </div>
+
+                <div class="step-card glass rounded-2xl p-8 pt-12 reveal">
+                    <div class="step-number">4</div>
+                    <div class="w-12 h-12 bg-orange-500/20 rounded-lg flex items-center justify-center mb-4">
+                        <i data-lucide="play" class="w-6 h-6 text-orange-400"></i>
+                    </div>
+                    <h3 class="font-space text-lg font-bold mb-2">Compress</h3>
+                    <p class="text-gray-400 text-sm">Click Start and let Mini Compressor handle the rest with full CMD output.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="screenshots" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-space text-4xl md:text-5xl font-bold mb-4">
+                    See It In <span class="gradient-text">Action</span>
+                </h2>
+                <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+                    Beautiful, intuitive interface designed for both beginners and professionals.
+                </p>
+            </div>
+
+            <div class="screenshot-frame reveal relative bg-gradient-to-br from-gray-900 to-black border border-primary/20">
+                <img src="https://github.com/CarldricGaming/Mini-Compressor/assets/46277745/ab77ffe2-8ea9-46fe-b1c8-c393bcc587e4"
+                     alt="Mini Compressor Main Interface"
+                     class="w-full h-auto rounded-2xl"
+                     loading="lazy"
+                     onerror="this.parentElement.innerHTML='<div class=\'flex flex-col items-center justify-center py-20 text-gray-500\'><i data-lucide=\'monitor\' class=\'w-16 h-16 mb-4 opacity-50\'></i><p class=\'text-lg font-space\'>Mini Compressor Interface</p><p class=\'text-sm opacity-70\'>Dark theme with glassmorphism UI</p></div>'; lucide.createIcons();">
+            </div>
+        </div>
+    </section>
+
+
+    <section id="requirements" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-space text-4xl md:text-5xl font-bold mb-4">
+                    System <span class="gradient-text">Requirements</span>
+                </h2>
+                <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+                    Ensure your system meets these specifications for optimal performance.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <div class="glass rounded-2xl p-8 reveal border-l-4 border-yellow-500">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+                            <i data-lucide="minimize-2" class="w-6 h-6 text-yellow-500"></i>
+                        </div>
+                        <h3 class="font-space text-2xl font-bold">Minimum</h3>
+                    </div>
+                    <ul class="space-y-4">
+                        <li class="flex items-center gap-3 text-gray-300">
+                            <i data-lucide="memory-stick" class="w-5 h-5 text-primary"></i>
+                            <span><strong>RAM:</strong> 4GB</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-300">
+                            <i data-lucide="hard-drive" class="w-5 h-5 text-primary"></i>
+                            <span><strong>Storage:</strong> 320GB</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-300">
+                            <i data-lucide="monitor" class="w-5 h-5 text-primary"></i>
+                            <span><strong>OS:</strong> Windows 7, 8, 8.1, 10 (x64)</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="glass rounded-2xl p-8 reveal border-l-4 border-accent">
+                    <div class="flex items-center gap-3 mb-6">
+                        <div class="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center">
+                            <i data-lucide="maximize-2" class="w-6 h-6 text-accent"></i>
+                        </div>
+                        <h3 class="font-space text-2xl font-bold">Recommended</h3>
+                    </div>
+                    <ul class="space-y-4">
+                        <li class="flex items-center gap-3 text-gray-300">
+                            <i data-lucide="memory-stick" class="w-5 h-5 text-accent"></i>
+                            <span><strong>RAM:</strong> 8GB+</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-300">
+                            <i data-lucide="hard-drive" class="w-5 h-5 text-accent"></i>
+                            <span><strong>Storage:</strong> 512GB+ SSD</span>
+                        </li>
+                        <li class="flex items-center gap-3 text-gray-300">
+                            <i data-lucide="monitor" class="w-5 h-5 text-accent"></i>
+                            <span><strong>OS:</strong> Windows 10/11 (x64)</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="downloads" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-space text-4xl md:text-5xl font-bold mb-4">
+                    Download <span class="gradient-text">Mini Compressor</span>
+                </h2>
+                <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+                    Get the latest stable release or browse previous versions.
+                </p>
+            </div>
+
+
+            <div class="download-card glass rounded-2xl p-8 mb-8 reveal bg-gradient-to-br from-primary/10 to-transparent">
+                <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-3">
+                            <span class="bg-accent text-black text-xs font-bold px-3 py-1 rounded-full">LATEST</span>
+                            <span class="text-gray-400 text-sm">Released Dec 14, 2025</span>
+                        </div>
+                        <h3 class="font-space text-3xl font-bold mb-2">Version 2025.12.14</h3>
+                        <ul class="text-gray-400 text-sm space-y-1">
+                            <li>• Added Lepton (best ratio for JPG compression)</li>
+                            <li>• Update save logs after compress</li>
+                            <li>• Added Universal CLS and CLS-UHARC</li>
+                            <li>• New Check for Updates feature</li>
+                        </ul>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-3">
+                        <a href="https://github.com/CarldricGaming/Mini-Compressor/releases/download/v2025.12.14/Mini.Compressor.v2025.12.14.7z"
+                           class="btn-glow bg-primary hover:bg-secondary text-black font-bold px-6 py-3 rounded-xl flex items-center justify-center gap-2 whitespace-nowrap">
+                            <i data-lucide="download" class="w-5 h-5"></i>
+                            <span>Download v2025.12.14</span>
+                        </a>
+                        <button onclick="copyLink('https://github.com/CarldricGaming/Mini-Compressor/releases/download/v2025.12.14/Mini.Compressor.v2025.12.14.7z')"
+                                class="glass glass-hover text-white font-medium px-6 py-3 rounded-xl flex items-center justify-center gap-2 whitespace-nowrap">
+                            <i data-lucide="link" class="w-5 h-5"></i>
+                            <span>Copy Link</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="download-card glass rounded-2xl p-6 reveal">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h4 class="font-space text-xl font-bold">v2025.11.17</h4>
+                            <p class="text-gray-500 text-sm">Fixed FreeARC Split issue</p>
+                        </div>
+                        <span class="text-gray-500 text-xs">Nov 2025</span>
+                    </div>
+                    <a href="https://github.com/CarldricGaming/Mini-Compressor/releases/tag/v2025.11.17"
+                       target="_blank"
+                       class="w-full glass glass-hover text-white font-medium px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm">
+                        <i data-lucide="external-link" class="w-4 h-4"></i>
+                        <span>View Release</span>
+                    </a>
+                </div>
+
+                <div class="download-card glass rounded-2xl p-6 reveal">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h4 class="font-space text-xl font-bold">v2025.09.03</h4>
+                            <p class="text-gray-500 text-sm">Added BSC compression</p>
+                        </div>
+                        <span class="text-gray-500 text-xs">Sep 2025</span>
+                    </div>
+                    <a href="https://github.com/CarldricGaming/Mini-Compressor/releases/tag/v2025.09.03"
+                       target="_blank"
+                       class="w-full glass glass-hover text-white font-medium px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm">
+                        <i data-lucide="external-link" class="w-4 h-4"></i>
+                        <span>View Release</span>
+                    </a>
+                </div>
+
+                <div class="download-card glass rounded-2xl p-6 reveal">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h4 class="font-space text-xl font-bold">v2024.07.24</h4>
+                            <p class="text-gray-500 text-sm">Installer Creator updated</p>
+                        </div>
+                        <span class="text-gray-500 text-xs">Jul 2024</span>
+                    </div>
+                    <a href="https://github.com/CarldricGaming/Mini-Compressor/releases/tag/v2024.07.24"
+                       target="_blank"
+                       class="w-full glass glass-hover text-white font-medium px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm">
+                        <i data-lucide="external-link" class="w-4 h-4"></i>
+                        <span>View Release</span>
+                    </a>
+                </div>
+
+                <div class="download-card glass rounded-2xl p-6 reveal">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h4 class="font-space text-xl font-bold">All Releases</h4>
+                            <p class="text-gray-500 text-sm">Browse complete history</p>
+                        </div>
+                        <i data-lucide="archive" class="w-5 h-5 text-gray-500"></i>
+                    </div>
+                    <a href="https://github.com/CarldricGaming/Mini-Compressor/releases"
+                       target="_blank"
+                       class="w-full glass glass-hover text-white font-medium px-4 py-2 rounded-lg flex items-center justify-center gap-2 text-sm">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.37 0 0 5.373 0 12c0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.84 1.236 1.84 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.418-1.305.762-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.605-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.298 24 12c0-6.627-5.373-12-12-12z"/></svg>
+                        <span>View All</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="credits" class="py-24 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
+            <div class="text-center reveal">
+                <h2 class="font-space text-4xl md:text-5xl font-bold mb-4">
+                    Powered By <span class="gradient-text">The Community</span>
+                </h2>
+                <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+                    Mini Compressor brings together the best compression tools from talented developers worldwide.
+                </p>
+            </div>
+        </div>
+
+
+        <div class="relative overflow-hidden py-8">
+            <div class="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-dark to-transparent z-10"></div>
+            <div class="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-dark to-transparent z-10"></div>
+
+            <div class="credits-track">
+
+                <div class="flex space-x-4 px-2">
+                    <div class="credit-item glass rounded-xl p-4 min-w-[200px] tooltip" data-tooltip="by Igor Pavlov & Shelwien - Popular archive format">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="file-archive" class="w-8 h-8 text-primary"></i>
+                            <div>
+                                <h4 class="font-bold text-sm">7-Zip</h4>
+                                <p class="text-xs text-gray-500">Archiver</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="credit-item glass rounded-xl p-4 min-w-[200px] tooltip" data-tooltip="by Bulat Ziganshin - Powerful compression archiver">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="archive" class="w-8 h-8 text-accent"></i>
+                            <div>
+                                <h4 class="font-bold text-sm">FreeArc</h4>
+                                <p class="text-xs text-gray-500">Archiver</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="credit-item glass rounded-xl p-4 min-w-[200px] tooltip" data-tooltip="by Bulat Ziganshin - SuperREP repetitive data compressor">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="copy" class="w-8 h-8 text-purple-400"></i>
+                            <div>
+                                <h4 class="font-bold text-sm">SREP</h4>
+                                <p class="text-xs text-gray-500">Precompressor</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="credit-item glass rounded-xl p-4 min-w-[200px] tooltip" data-tooltip="by ProFrager - LOLZ compressor for maximum ratio">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="zap" class="w-8 h-8 text-yellow-400"></i>
+                            <div>
+                                <h4 class="font-bold text-sm">LOLZ</h4>
+                                <p class="text-xs text-gray-500">Compressor</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="credit-item glass rounded-xl p-4 min-w-[200px] tooltip" data-tooltip="by Razor12911 - Universal precompressor tool">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="tool" class="w-8 h-8 text-cyan-400"></i>
+                            <div>
+                                <h4 class="font-bold text-sm">XTool</h4>
+                                <p class="text-xs text-gray-500">Precompressor</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="credit-item glass rounded-xl p-4 min-w-[200px] tooltip" data-tooltip="by Razor12911 - ZTool preprocessing engine">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="settings" class="w-8 h-8 text-orange-400"></i>
+                            <div>
+                                <h4 class="font-bold text-sm">ZTool</h4>
+                                <p class="text-xs text-gray-500">Preprocessor</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="credit-item glass rounded-xl p-4 min-w-[200px] tooltip" data-tooltip="by Christian Schneider - Recompression tool">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="refresh-cw" class="w-8 h-8 text-pink-400"></i>
+                            <div>
+                                <h4 class="font-bold text-sm">Precomp</h4>
+                                <p class="text-xs text-gray-500">Recompressor</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="credit-item glass rounded-xl p-4 min-w-[200px] tooltip" data-tooltip="by panker1992 - Masked Compression technology">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="layers" class="w-8 h-8 text-red-400"></i>
+                            <div>
+                                <h4 class="font-bold text-sm">Masked Comp</h4>
+                                <p class="text-xs text-gray-500">Core Tech</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex space-x-4 px-2">
+                    <div class="credit-item glass rounded-xl p-4 min-w-[200px]">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="file-archive" class="w-8 h-8 text-primary"></i>
+                            <div>
+                                <h4 class="font-bold text-sm">7-Zip</h4>
+                                <p class="text-xs text-gray-500">Archiver</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="credit-item glass rounded-xl p-4 min-w-[200px]">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="archive" class="w-8 h-8 text-accent"></i>
+                            <div>
+                                <h4 class="font-bold text-sm">FreeArc</h4>
+                                <p class="text-xs text-gray-500">Archiver</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="credit-item glass rounded-xl p-4 min-w-[200px]">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="copy" class="w-8 h-8 text-purple-400"></i>
+                            <div>
+                                <h4 class="font-bold text-sm">SREP</h4>
+                                <p class="text-xs text-gray-500">Precompressor</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="credit-item glass rounded-xl p-4 min-w-[200px]">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="zap" class="w-8 h-8 text-yellow-400"></i>
+                            <div>
+                                <h4 class="font-bold text-sm">LOLZ</h4>
+                                <p class="text-xs text-gray-500">Compressor</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="credit-item glass rounded-xl p-4 min-w-[200px]">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="tool" class="w-8 h-8 text-cyan-400"></i>
+                            <div>
+                                <h4 class="font-bold text-sm">XTool</h4>
+                                <p class="text-xs text-gray-500">Precompressor</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="credit-item glass rounded-xl p-4 min-w-[200px]">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="settings" class="w-8 h-8 text-orange-400"></i>
+                            <div>
+                                <h4 class="font-bold text-sm">ZTool</h4>
+                                <p class="text-xs text-gray-500">Preprocessor</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="credit-item glass rounded-xl p-4 min-w-[200px]">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="refresh-cw" class="w-8 h-8 text-pink-400"></i>
+                            <div>
+                                <h4 class="font-bold text-sm">Precomp</h4>
+                                <p class="text-xs text-gray-500">Recompressor</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="credit-item glass rounded-xl p-4 min-w-[200px]">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="layers" class="w-8 h-8 text-red-400"></i>
+                            <div>
+                                <h4 class="font-bold text-sm">Masked Comp</h4>
+                                <p class="text-xs text-gray-500">Core Tech</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 reveal">
+                <div class="glass rounded-lg p-3 text-center tooltip" data-tooltip="Error-correcting mode for CD images">
+                    <p class="text-xs font-bold text-gray-300">ECM</p>
+                    <p class="text-[10px] text-gray-500">Neill Corlett</p>
+                </div>
+                <div class="glass rounded-lg p-3 text-center tooltip" data-tooltip="High compression archiver">
+                    <p class="text-xs font-bold text-gray-300">UHARC</p>
+                    <p class="text-[10px] text-gray-500">Uwe Herklotz</p>
+                </div>
+                <div class="glass rounded-lg p-3 text-center tooltip" data-tooltip="Fast compression library">
+                    <p class="text-xs font-bold text-gray-300">lzturbo</p>
+                    <p class="text-[10px] text-gray-500">Hamid Buzidi</p>
+                </div>
+                <div class="glass rounded-lg p-3 text-center tooltip" data-tooltip="BSC compression algorithm">
+                    <p class="text-xs font-bold text-gray-300">BSC</p>
+                    <p class="text-[10px] text-gray-500">Ilya Grebnov</p>
+                </div>
+                <div class="glass rounded-lg p-3 text-center tooltip" data-tooltip="Inno Setup installer creator">
+                    <p class="text-xs font-bold text-gray-300">Inno Setup</p>
+                    <p class="text-[10px] text-gray-500">Jordan Russell</p>
+                </div>
+                <div class="glass rounded-lg p-3 text-center tooltip" data-tooltip="WinRAR archiver">
+                    <p class="text-xs font-bold text-gray-300">WinRAR</p>
+                    <p class="text-[10px] text-gray-500">Alexander Roshal</p>
+                </div>
+                <div class="glass rounded-lg p-3 text-center tooltip" data-tooltip="Audio library for custom music">
+                    <p class="text-xs font-bold text-gray-300">BASS</p>
+                    <p class="text-[10px] text-gray-500">Un4seen Dev</p>
+                </div>
+                <div class="glass rounded-lg p-3 text-center tooltip" data-tooltip="NanoZip archiver">
+                    <p class="text-xs font-bold text-gray-300">NanoZip</p>
+                    <p class="text-[10px] text-gray-500">Sami Runsas</p>
+                </div>
+                <div class="glass rounded-lg p-3 text-center tooltip" data-tooltip="ZCM compressor">
+                    <p class="text-xs font-bold text-gray-300">ZCM</p>
+                    <p class="text-[10px] text-gray-500">Nania F.A.</p>
+                </div>
+                <div class="glass rounded-lg p-3 text-center tooltip" data-tooltip="Packer/archiver tool">
+                    <p class="text-xs font-bold text-gray-300">Razor Archiver</p>
+                    <p class="text-[10px] text-gray-500">C. Martelock</p>
+                </div>
+                <div class="glass rounded-lg p-3 text-center tooltip" data-tooltip="OSCDIMG ISO creator">
+                    <p class="text-xs font-bold text-gray-300">OSCDIMG</p>
+                    <p class="text-[10px] text-gray-500">Microsoft</p>
+                </div>
+                <div class="glass rounded-lg p-3 text-center tooltip" data-tooltip="SafeCopy file utility">
+                    <p class="text-xs font-bold text-gray-300">SafeCopy</p>
+                    <p class="text-[10px] text-gray-500">Roman Ish</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section id="community" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-space text-4xl md:text-5xl font-bold mb-4">
+                    Join The <span class="gradient-text">Community</span>
+                </h2>
+                <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+                    Connect with other repackers and get support from the community.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                <a href="https://github.com/CarldricGaming/Mini-Compressor" target="_blank"
+                   class="glass glass-hover rounded-2xl p-8 flex items-center gap-6 group reveal">
+                    <div class="w-16 h-16 bg-gray-800 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <svg class="w-8 h-8" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.37 0 0 5.373 0 12c0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.84 1.236 1.84 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.418-1.305.762-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.605-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.298 24 12c0-6.627-5.373-12-12-12z"/></svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-space text-xl font-bold mb-1">GitHub Repository</h3>
+                        <p class="text-gray-400 text-sm">Source code, releases, and issue tracking</p>
+                    </div>
+                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-500 group-hover:text-primary group-hover:translate-x-2 transition-all"></i>
+                </a>
+
+                <a href="https://fileforums.com/showpost.php?p=491935&postcount=173" target="_blank"
+                   class="glass glass-hover rounded-2xl p-8 flex items-center gap-6 group reveal">
+                    <div class="w-16 h-16 bg-blue-900/50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <i data-lucide="message-square" class="w-8 h-8 text-blue-400"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-space text-xl font-bold mb-1">FileForums</h3>
+                        <p class="text-gray-400 text-sm">Community support and plugins discussion</p>
+                    </div>
+                    <i data-lucide="arrow-right" class="w-6 h-6 text-gray-500 group-hover:text-primary group-hover:translate-x-2 transition-all"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+
+    <footer class="py-12 border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex items-center gap-3">
+                    <img src="data:image/png;base64,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" alt="Logo" class="w-10 h-10 rounded-lg object-contain bg-black/20">
+                    <div>
+                        <p class="font-space font-bold">Made by CarldricGaming and the community</p>
+                        <p class="text-gray-500 text-sm">© 2026 Mini Compressor. Open Source under MIT License.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/CarldricGaming/Mini-Compressor" target="_blank"
+                       class="text-gray-400 hover:text-primary transition-colors">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.37 0 0 5.373 0 12c0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.84 1.236 1.84 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.418-1.305.762-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.605-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.298 24 12c0-6.627-5.373-12-12-12z"/></svg>
+                    </a>
+                    <a href="https://fileforums.com/showpost.php?p=491935&postcount=173" target="_blank"
+                       class="text-gray-400 hover:text-primary transition-colors">
+                        <i data-lucide="globe" class="w-6 h-6"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="mt-8 pt-8 border-t border-white/5 text-center">
+                <p class="text-gray-600 text-xs max-w-2xl mx-auto">
+                    <strong>Disclaimer:</strong> Mini Compressor is provided as-is without warranty. The developers are not responsible for data loss.
+                    Always backup your files before compression. All third-party tools belong to their respective owners.
+                </p>
+            </div>
+        </div>
+    </footer>
+
+
+    <div id="backToTop" onclick="scrollToTop()">
+        <i data-lucide="chevron-up" class="w-6 h-6 text-white"></i>
+    </div>
+
+
+    <div id="toast" class="fixed bottom-8 left-1/2 transform -translate-x-1/2 glass px-6 py-3 rounded-full opacity-0 pointer-events-none transition-opacity duration-300 z-50 flex items-center gap-2">
+        <i data-lucide="check-circle" class="w-5 h-5 text-accent"></i>
+        <span id="toastMessage" class="text-sm font-medium">Link copied to clipboard!</span>
+    </div>
+
+    <script>
+
+        lucide.createIcons();
+
+
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loader').classList.add('hidden');
+                initAnimations();
+            }, 1500);
+        });
+
+
+        tsParticles.load("tsparticles", {
+            fullScreen: { enable: false },
+            particles: {
+                number: {
+                    value: 80,
+                    density: { enable: true, value_area: 800 }
+                },
+                color: { value: ["#00d4ff", "#00ff88", "#0099cc"] },
+                shape: { type: "circle" },
+                opacity: {
+                    value: 0.5,
+                    random: true,
+                    animation: { enable: true, speed: 1, minimumValue: 0.1, sync: false }
+                },
+                size: {
+                    value: 3,
+                    random: true,
+                    animation: { enable: true, speed: 2, minimumValue: 0.1, sync: false }
+                },
+                lineLinked: {
+                    enable: true,
+                    distance: 150,
+                    color: "#00d4ff",
+                    opacity: 0.1,
+                    width: 1
+                },
+                move: {
+                    enable: true,
+                    speed: 1,
+                    direction: "none",
+                    random: true,
+                    straight: false,
+                    outModes: { default: "bounce" },
+                    attract: { enable: true, rotateX: 600, rotateY: 1200 }
+                }
+            },
+            interactivity: {
+                detectsOn: "canvas",
+                events: {
+                    onHover: { enable: true, mode: "grab" },
+                    onClick: { enable: true, mode: "push" },
+                    resize: true
+                },
+                modes: {
+                    grab: { distance: 140, lineLinked: { opacity: 0.5 } },
+                    push: { quantity: 4 }
+                }
+            },
+            detectRetina: true
+        });
+
+
+        function initAnimations() {
+            gsap.registerPlugin(ScrollTrigger);
+
+
+            gsap.from(".hero-content > *", {
+                y: 50,
+                opacity: 0,
+                duration: 1,
+                stagger: 0.2,
+                ease: "power3.out"
+            });
+
+
+            gsap.utils.toArray('.reveal').forEach(element => {
+                gsap.fromTo(element,
+                    { opacity: 0, y: 30 },
+                    {
+                        opacity: 1,
+                        y: 0,
+                        duration: 0.8,
+                        ease: "power3.out",
+                        scrollTrigger: {
+                            trigger: element,
+                            start: "top 85%",
+                            toggleActions: "play none none reverse"
+                        }
+                    }
+                );
+            });
+
+
+            gsap.utils.toArray('.stat-number').forEach(stat => {
+                const target = parseInt(stat.getAttribute('data-target'));
+                ScrollTrigger.create({
+                    trigger: stat,
+                    start: "top 80%",
+                    onEnter: () => {
+                        gsap.to(stat, {
+                            innerHTML: target,
+                            duration: 2,
+                            snap: { innerHTML: 1 },
+                            ease: "power2.out",
+                            onUpdate: function() {
+                                stat.innerHTML = Math.ceil(this.targets()[0].innerHTML);
+                            }
+                        });
+                    },
+                    once: true
+                });
+            });
+        }
+
+
+        let lastScroll = 0;
+        const navbar = document.getElementById('navbar');
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+
+            if (currentScroll > 100) {
+                navbar.classList.remove('opacity-0', '-translate-y-full');
+                navbar.classList.add('opacity-100', 'translate-y-0');
+            } else {
+                navbar.classList.add('opacity-0', '-translate-y-full');
+                navbar.classList.remove('opacity-100', 'translate-y-0');
+            }
+
+
+            const backToTop = document.getElementById('backToTop');
+            if (currentScroll > 500) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+
+            lastScroll = currentScroll;
+        });
+
+
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+
+        function copyLink(url) {
+            navigator.clipboard.writeText(url).then(() => {
+                showToast('Download link copied to clipboard!');
+            });
+        }
+
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            toast.classList.add('opacity-100');
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none');
+                toast.classList.remove('opacity-100');
+            }, 3000);
+        }
+
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+
+        const themeToggle = document.getElementById('themeToggle');
+        let isLight = false;
+
+        themeToggle.addEventListener('click', () => {
+            isLight = !isLight;
+            document.body.classList.toggle('light-mode');
+
+            const icon = themeToggle.querySelector('i');
+            if (isLight) {
+                icon.setAttribute('data-lucide', 'moon');
+            } else {
+                icon.setAttribute('data-lucide', 'sun');
+            }
+            lucide.createIcons();
+        });
+
+
+        const marquee = document.querySelector('.credits-track');
+        const creditItems = document.querySelectorAll('.credit-item');
+
+        creditItems.forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                marquee.style.animationPlayState = 'paused';
+            });
+            item.addEventListener('mouseleave', () => {
+                marquee.style.animationPlayState = 'running';
+            });
+        });
+    </script>
+</body>
+</html>
